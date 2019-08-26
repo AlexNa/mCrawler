@@ -2,10 +2,14 @@ import os
 import scrapy
 import datetime
 import json
+import urllib
 import urllib.parse
 from mCrawler.items import PlainItem
 
-# scrapy crawl restful -a url=https://httpbin.org/get -a method=GET
+
+# scrapy crawl restful -a url=https://postman-echo.com/get?foo1=bar1&foo2=bar2 -a method=GET
+# scrapy crawl restful -a url=https://postman-echo.com/post -a method=POST -a params='{"aaa":"111"}'
+
 
 class RestfulSpider(scrapy.Spider):
     name = 'restful'
@@ -29,11 +33,13 @@ class RestfulSpider(scrapy.Spider):
             if self.method.upper() == 'GET':
                 yield scrapy.Request(self.url, callback=self.parse, method="GET")
             if self.method.upper() == 'POST':
-                yield scrapy.FormRequest(self.url, callback=self.parse)
+                yield scrapy.Request(self.url, callback=self.parse, method="POST", body=json.dumps(self.params),
+                                     headers={'Content-Type': 'application/json'})
 
     def parse(self, response):
         item = None
-        if self.custom_settings["ITEM_PIPELINES"] and str(self.custom_settings["ITEM_PIPELINES"]).find('PlainWriterPipeline') > -1:
+        if self.custom_settings["ITEM_PIPELINES"] and str(self.custom_settings["ITEM_PIPELINES"]).find(
+                'PlainWriterPipeline') > -1:
             item = json.loads(response.text)
         else:
             item = PlainItem()
