@@ -14,7 +14,6 @@ class baseItem(scrapy.Item):
     date = scrapy.Field()
     url = scrapy.Field()
 
-
 class NewsItem(baseItem):
     encode = scrapy.Field()
     title = scrapy.Field()

@@ -18,6 +18,22 @@ import datetime
 from mCrawler.items import NewsItem
 
 
+class PlainWriterPipeline(object):
+    def open_spider(self, spider):
+        file = open(spider.output_filename, 'wb')
+        self.file_handle = file
+
+    def close_spider(self, spider):
+        self.file_handle.close()
+
+        full_path = os.getcwd() + os.sep + spider.output_filename
+        sys.stdout.write(full_path)
+        sys.stdout.flush()
+
+    def process_item(self, item, spider):
+        self.file_handle.write(str(item).encode('utf-8'))
+        return item
+
 class JsonWriterPipeline(object):
     def open_spider(self, spider):
         file = open(spider.output_filename, 'wb')
