@@ -15,7 +15,6 @@ import json
 import csv
 import uuid
 import datetime
-from mCrawler.items import NewsItem
 
 
 class PlainWriterPipeline(object):
@@ -54,7 +53,9 @@ class JsonWriterPipeline(object):
     def process_item(self, item, spider):
         item.setdefault('uuid', str(uuid.uuid1()))
         item.setdefault('date', datetime.datetime.now().strftime("%Y%m%d%H%M"))
-        self.exporter.fields_to_export = spider.fields_to_export
+        self.exporter.fields_to_export = []
+        if hasattr(spider, 'fields_to_export'):
+            self.exporter.fields_to_export = spider.fields_to_export
         for field in item.keys():
             if field not in self.exporter.fields_to_export:
                 self.exporter.fields_to_export.append(field)
@@ -83,9 +84,12 @@ class CSVWriterPipeline(object):
     def process_item(self, item, spider):
         item.setdefault('uuid', str(uuid.uuid1()))
         item.setdefault('date', datetime.datetime.now().strftime("%Y%m%d%H%M"))
-        self.exporter.fields_to_export = spider.fields_to_export
+        self.exporter.fields_to_export = []
+        if hasattr(spider, 'fields_to_export'):
+            self.exporter.fields_to_export = spider.fields_to_export
         for field in item.keys():
             if field not in self.exporter.fields_to_export:
                 self.exporter.fields_to_export.append(field)
+
         self.exporter.export_item(item)
         return item

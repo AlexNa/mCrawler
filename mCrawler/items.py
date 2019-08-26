@@ -31,3 +31,6 @@ class TwitterItem(baseItem):
 class WebItem(baseItem):
     domain = Field()
     content = Field()
+
+class PlainItem(baseItem):
+    body = Field()
